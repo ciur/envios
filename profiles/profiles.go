@@ -17,6 +17,14 @@ func (p Profile) Equal(q Profile) bool {
 		return false
 	}
 
+	if p.InheritFrom != q.InheritFrom {
+		return false
+	}
+
+	if p.DefaultSwitch != q.DefaultSwitch {
+		return false
+	}
+
 	if len(p.Variables) != len(q.Variables) {
 		return false
 	}
