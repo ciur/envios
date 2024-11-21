@@ -1,8 +1,12 @@
 package parser
 
 import (
-	"envios/profiles"
+	"bufio"
+	"fmt"
+	"os"
 	"strings"
+
+	"github.com/ciur/enward/profiles"
 )
 
 const (
@@ -186,4 +190,32 @@ func BuildProfiles(tokens []Token) []profiles.Profile {
 	}
 
 	return items
+}
+
+func LoadConfig(fileName string) ([]profiles.Profile, string) {
+	var items []profiles.Profile
+	var tokens []Token
+	var error string
+
+	file, err := os.Open(fileName)
+	if err != nil {
+		error = fmt.Sprintf("Error opening %s: %v\n", fileName, err)
+		return items, error
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		new_tokens, parse_error := ParseProfileLine(line)
+		if parse_error != "" {
+			error = fmt.Sprintf("Parsing error: %s", parse_error)
+			return items, error
+		}
+		tokens = append(tokens, new_tokens...)
+	}
+
+	items = BuildProfiles(tokens)
+	return items, error
 }
