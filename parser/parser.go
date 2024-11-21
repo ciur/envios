@@ -10,13 +10,10 @@ import (
 )
 
 const (
-	LEFT_BRA               = "LEFT_BRA"
-	RIGHT_BRA              = "RIGHT_BRA"
 	PROFILE_NAME           = "PROFILE_NAME"
 	INHERITED_PROFILE_NAME = "INHERITED_PROFILE_NAME"
 	DEFAULT_SWITCH         = "DEFAULT_SWITCH"
 	VAR_NAME               = "VAR_NAME"
-	EQUAL                  = "EQUAL"
 	VAR_VALUE              = "VAR_VALUE"
 )
 
@@ -34,8 +31,6 @@ func ParseProfileLine(line string) ([]Token, string) {
 	for i := 0; i < len(line); i++ {
 		if line[i] == '[' {
 			gather_profile_name = true
-			token := Token{name: LEFT_BRA, value: string('[')}
-			tokens = append(tokens, token)
 			continue
 		}
 
@@ -52,8 +47,6 @@ func ParseProfileLine(line string) ([]Token, string) {
 
 			}
 			gather_profile_name = false
-			token := Token{name: RIGHT_BRA, value: string(']')}
-			tokens = append(tokens, token)
 			break
 		}
 
@@ -144,9 +137,6 @@ func ParseVariableLine(line string) []Token {
 		token := Token{name: VAR_NAME, value: value}
 		tokens = append(tokens, token)
 
-		token = Token{name: EQUAL, value: "="}
-		tokens = append(tokens, token)
-
 		value = strings.TrimSpace(parts[1])
 		token = Token{name: VAR_VALUE, value: value}
 		tokens = append(tokens, token)
@@ -165,25 +155,29 @@ func BuildProfiles(tokens []Token) []profiles.Profile {
 		}
 		if token.name == PROFILE_NAME {
 			prof := profiles.Profile{Name: token.value, DefaultSwitch: false}
-			if tokens[i+1].name == INHERITED_PROFILE_NAME {
-				prof.InheritFrom = tokens[i+1].value
+			if i+1 < len(tokens) {
+				if tokens[i+1].name == INHERITED_PROFILE_NAME {
+					prof.InheritFrom = tokens[i+1].value
+				}
 			}
-			if tokens[i+2].name == DEFAULT_SWITCH {
-				prof.DefaultSwitch = true
+			if i+2 < len(tokens) {
+				if tokens[i+2].name == DEFAULT_SWITCH {
+					prof.DefaultSwitch = true
+				}
 			}
 			for j := i + 1; j < len(tokens); j++ {
+				index += 1
 				if tokens[j].name == PROFILE_NAME {
 					break
 				}
 				variable := profiles.ProfileVariable{}
 				if tokens[j].name == VAR_NAME {
 					variable.Name = tokens[j].value
-					if tokens[j+2].name == VAR_VALUE {
-						variable.Value = tokens[j+2].value
+					if tokens[j+1].name == VAR_VALUE {
+						variable.Value = tokens[j+1].value
 						prof.Variables = append(prof.Variables, variable)
 					}
 				}
-				index = j + 1
 			}
 			items = append(items, prof)
 		}
@@ -208,12 +202,17 @@ func LoadConfig(fileName string) ([]profiles.Profile, string) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		new_tokens, parse_error := ParseProfileLine(line)
-		if parse_error != "" {
-			error = fmt.Sprintf("Parsing error: %s", parse_error)
-			return items, error
+		if strings.Contains(line, "=") {
+			var_tokens := ParseVariableLine(line)
+			tokens = append(tokens, var_tokens...)
+		} else {
+			new_tokens, parse_error := ParseProfileLine(line)
+			if parse_error != "" {
+				error = fmt.Sprintf("Parsing error: %s", parse_error)
+				return items, error
+			}
+			tokens = append(tokens, new_tokens...)
 		}
-		tokens = append(tokens, new_tokens...)
 	}
 
 	items = BuildProfiles(tokens)

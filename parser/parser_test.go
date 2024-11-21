@@ -2,22 +2,22 @@ package parser
 
 import (
 	"testing"
+
+	"github.com/ciur/enward/profiles"
 )
 
 func TestParseProfileLineBasicProfileName(t *testing.T) {
 	actual_tokens, err := ParseProfileLine("[coco]\n\n")
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "coco"},
-		{name: RIGHT_BRA, value: string("]")},
 	}
 
 	if err != "" {
 		t.Errorf("Error while parsing profile line %v", err)
 	}
 
-	if len(actual_tokens) != 3 {
-		t.Errorf("Expected: len(actual_tokens) == 3, got %d", len(actual_tokens))
+	if len(actual_tokens) != 1 {
+		t.Errorf("Expected: len(actual_tokens) == 1, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -30,17 +30,15 @@ func TestParseProfileLineBasicProfileName(t *testing.T) {
 func TestParseProfileLineProfileNameWithWhiteSpacesInFront(t *testing.T) {
 	actual_tokens, err := ParseProfileLine("    	 [coco]  \n\n")
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "coco"},
-		{name: RIGHT_BRA, value: string("]")},
 	}
 
 	if err != "" {
 		t.Errorf("Error while parsing profile line %v", err)
 	}
 
-	if len(actual_tokens) != 3 {
-		t.Errorf("Expected: len(actual_tokens) == 3, got %d", len(actual_tokens))
+	if len(actual_tokens) != 1 {
+		t.Errorf("Expected: len(actual_tokens) == 1, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -53,17 +51,15 @@ func TestParseProfileLineProfileNameWithWhiteSpacesInFront(t *testing.T) {
 func TestParseProfileLineProfileNameWithWhiteSpacesAroundName(t *testing.T) {
 	actual_tokens, err := ParseProfileLine("    	 [     some_name    ]  \n\n")
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "some_name"},
-		{name: RIGHT_BRA, value: string("]")},
 	}
 
 	if err != "" {
 		t.Errorf("Error while parsing profile line %v", err)
 	}
 
-	if len(actual_tokens) != 3 {
-		t.Errorf("Expected: len(actual_tokens) == 3, got %d", len(actual_tokens))
+	if len(actual_tokens) != 1 {
+		t.Errorf("Expected: len(actual_tokens) == 1, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -76,18 +72,16 @@ func TestParseProfileLineProfileNameWithWhiteSpacesAroundName(t *testing.T) {
 func TestParseProfileLine1(t *testing.T) {
 	actual_tokens, err := ParseProfileLine("    	 [     some_name:common    ]  \n\n")
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "some_name"},
 		{name: INHERITED_PROFILE_NAME, value: "common"},
-		{name: RIGHT_BRA, value: string("]")},
 	}
 
 	if err != "" {
 		t.Errorf("Error while parsing profile line %v", err)
 	}
 
-	if len(actual_tokens) != 4 {
-		t.Errorf("Expected: len(actual_tokens) == 4, got %d", len(actual_tokens))
+	if len(actual_tokens) != 2 {
+		t.Errorf("Expected: len(actual_tokens) == 2, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -100,18 +94,16 @@ func TestParseProfileLine1(t *testing.T) {
 func TestParseProfileLine2(t *testing.T) {
 	actual_tokens, err := ParseProfileLine("    	 [     some_name   :   common    ]  \n\n")
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "some_name"},
 		{name: INHERITED_PROFILE_NAME, value: "common"},
-		{name: RIGHT_BRA, value: string("]")},
 	}
 
 	if err != "" {
 		t.Errorf("Error while parsing profile line %v", err)
 	}
 
-	if len(actual_tokens) != 4 {
-		t.Errorf("Expected: len(actual_tokens) == 4, got %d", len(actual_tokens))
+	if len(actual_tokens) != 2 {
+		t.Errorf("Expected: len(actual_tokens) == 2, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -124,19 +116,17 @@ func TestParseProfileLine2(t *testing.T) {
 func TestParseProfileLine3(t *testing.T) {
 	actual_tokens, err := ParseProfileLine("    	 [     some_name   :   common:default   ]  \n\n")
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "some_name"},
 		{name: INHERITED_PROFILE_NAME, value: "common"},
 		{name: DEFAULT_SWITCH, value: "default"},
-		{name: RIGHT_BRA, value: string("]")},
 	}
 
 	if err != "" {
 		t.Errorf("Error while parsing profile line %v", err)
 	}
 
-	if len(actual_tokens) != 5 {
-		t.Errorf("Expected: len(actual_tokens) == 5, got %d", len(actual_tokens))
+	if len(actual_tokens) != 3 {
+		t.Errorf("Expected: len(actual_tokens) == 3, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -244,12 +234,11 @@ func TestParseVariableLine1(t *testing.T) {
 	actual_tokens := ParseVariableLine("  x = y  \n\n")
 	var tokens = []Token{
 		{name: VAR_NAME, value: string("x")},
-		{name: EQUAL, value: "="},
 		{name: VAR_VALUE, value: string("y")},
 	}
 
-	if len(actual_tokens) != 3 {
-		t.Errorf("Expected: len(actual_tokens) == 3, got %d", len(actual_tokens))
+	if len(actual_tokens) != 2 {
+		t.Errorf("Expected: len(actual_tokens) == 2, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -263,12 +252,11 @@ func TestParseVariableLine2(t *testing.T) {
 	actual_tokens := ParseVariableLine("  PAPER_URL = http://paper  \n\n")
 	var tokens = []Token{
 		{name: VAR_NAME, value: string("PAPER_URL")},
-		{name: EQUAL, value: "="},
 		{name: VAR_VALUE, value: string("http://paper")},
 	}
 
-	if len(actual_tokens) != 3 {
-		t.Errorf("Expected: len(actual_tokens) == 3, got %d", len(actual_tokens))
+	if len(actual_tokens) != 2 {
+		t.Errorf("Expected: len(actual_tokens) == 2, got %d", len(actual_tokens))
 	}
 
 	for i, token := range tokens {
@@ -280,11 +268,8 @@ func TestParseVariableLine2(t *testing.T) {
 
 func TestBuildProfiles1(t *testing.T) {
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "test"},
-		{name: RIGHT_BRA, value: string("]")},
 		{name: VAR_NAME, value: string("x")},
-		{name: EQUAL, value: string("=")},
 		{name: VAR_VALUE, value: string("y")},
 	}
 
@@ -307,14 +292,10 @@ func TestBuildProfiles1(t *testing.T) {
 
 func TestBuildProfiles2(t *testing.T) {
 	var tokens = []Token{
-		{name: LEFT_BRA, value: string("[")},
 		{name: PROFILE_NAME, value: "test"},
-		{name: RIGHT_BRA, value: string("]")},
 		{name: VAR_NAME, value: string("x")},
-		{name: EQUAL, value: string("=")},
 		{name: VAR_VALUE, value: string("y")},
 		{name: VAR_NAME, value: string("a")},
-		{name: EQUAL, value: string("=")},
 		{name: VAR_VALUE, value: string("b")},
 	}
 
@@ -338,5 +319,61 @@ func TestBuildProfiles2(t *testing.T) {
 	}
 	if actual_profiles[0].Variables[1].Value != "b" {
 		t.Errorf("expected value == 'b', got %s", actual_profiles[0].Variables[1].Value)
+	}
+}
+
+func TestBuildProfiles3(t *testing.T) {
+	/*
+	* Read two empty profiles (i.e. profiles without any variables)
+	 */
+	var tokens = []Token{
+		{name: PROFILE_NAME, value: "test1"},
+		{name: PROFILE_NAME, value: "test2"},
+	}
+
+	actual_profiles := BuildProfiles(tokens)
+
+	if len(actual_profiles) != 2 {
+		t.Errorf("Expected: len(actual_profiles) == 2, got %d", len(actual_profiles))
+	}
+
+	if actual_profiles[0].Name != "test1" {
+		t.Errorf("expected profile name == 'test1', got %s", actual_profiles[0].Name)
+	}
+
+	if actual_profiles[1].Name != "test2" {
+		t.Errorf("expected profile name == 'test2', got %s", actual_profiles[0].Name)
+	}
+
+}
+
+func TestConfigFile2(t *testing.T) {
+	testFile := "test_data/config2.ini"
+	actual_profiles, error := LoadConfig("test_data/config2.ini")
+	expected_profile1 := profiles.Profile{
+		Name: "test1",
+		Variables: []profiles.ProfileVariable{
+			{Name: "x", Value: "1"},
+			{Name: "y", Value: "2"},
+		},
+	}
+	expected_profile2 := profiles.Profile{
+		Name: "test2",
+	}
+
+	if error != "" {
+		t.Errorf("Error while opening %s", testFile)
+	}
+
+	if len(actual_profiles) != 2 {
+		t.Errorf("Expecting 2 profiles, got %d\n", len(actual_profiles))
+	}
+
+	if actual_profiles[0].NotEqual(expected_profile1) {
+		t.Errorf("Profile 1 expected to be %v, got %v", expected_profile1, actual_profiles[0])
+	}
+
+	if actual_profiles[1].NotEqual(expected_profile2) {
+		t.Errorf("Profile 2 expected to be %v, got %v", expected_profile2, actual_profiles[1])
 	}
 }
