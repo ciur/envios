@@ -1,5 +1,7 @@
 package profiles
 
+import "fmt"
+
 type ProfileVariable struct {
 	Name  string
 	Value string
@@ -11,6 +13,8 @@ type Profile struct {
 	DefaultSwitch bool
 	Variables     []ProfileVariable
 }
+
+type ProfilesList []Profile
 
 func (p Profile) Equal(q Profile) bool {
 	if p.Name != q.Name {
@@ -44,4 +48,20 @@ func (p Profile) Equal(q Profile) bool {
 
 func (p Profile) NotEqual(q Profile) bool {
 	return !p.Equal(q)
+}
+
+func (arr ProfilesList) FindProfile(name string) *Profile {
+	for _, profile := range arr {
+		if profile.Name == name {
+			return &profile
+		}
+	}
+
+	return nil
+}
+
+func (p Profile) PrintExports() {
+	for _, v := range p.Variables {
+		fmt.Printf("export %s=%s\n", v.Name, v.Value)
+	}
 }

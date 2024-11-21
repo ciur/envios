@@ -377,3 +377,51 @@ func TestConfigFile2(t *testing.T) {
 		t.Errorf("Profile 2 expected to be %v, got %v", expected_profile2, actual_profiles[1])
 	}
 }
+
+func TestConfigFile4(t *testing.T) {
+	testFile := "test_data/config4.ini"
+	actual_profiles, error := LoadConfig(testFile)
+	expected_profile1 := profiles.Profile{
+		Name: "common",
+		Variables: []profiles.ProfileVariable{
+			{Name: "x", Value: "1"},
+			{Name: "y", Value: "2"},
+		},
+	}
+	expected_profile2 := profiles.Profile{
+		Name:        "test",
+		InheritFrom: "common",
+		Variables: []profiles.ProfileVariable{
+			{Name: "a", Value: "coco"},
+			{Name: "b", Value: "jumbo"},
+		},
+	}
+	expected_profile3 := profiles.Profile{
+		Name:        "prod",
+		InheritFrom: "common",
+		Variables: []profiles.ProfileVariable{
+			{Name: "a", Value: "value1"},
+			{Name: "b", Value: "value2"},
+		},
+	}
+
+	if error != "" {
+		t.Errorf("Error while opening %s", testFile)
+	}
+
+	if len(actual_profiles) != 3 {
+		t.Errorf("Expecting 3 profiles, got %d\n", len(actual_profiles))
+	}
+
+	if actual_profiles[0].NotEqual(expected_profile1) {
+		t.Errorf("Profile 1 expected to be %v, got %v", expected_profile1, actual_profiles[0])
+	}
+
+	if actual_profiles[1].NotEqual(expected_profile2) {
+		t.Errorf("Profile 2 expected to be %v, got %v", expected_profile2, actual_profiles[1])
+	}
+
+	if actual_profiles[2].NotEqual(expected_profile3) {
+		t.Errorf("Profile 3 expected to be %v, got %v", expected_profile3, actual_profiles[2])
+	}
+}
