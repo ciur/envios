@@ -12,6 +12,7 @@ import (
 var (
 	flagConfig         = flag.String("c", ".enwardrc", "config file")
 	flagUseProfileName = flag.String("n", "", "Profile to use")
+	flagListProfiles   = flag.Bool("l", false, "List all profiles")
 )
 
 func main() {
@@ -24,6 +25,11 @@ func main() {
 		os.Exit(1)
 	}
 	profilesList := profiles.ProfilesList(allProfiles)
+
+	if *flagListProfiles == true {
+		profilesList.List()
+		return
+	}
 
 	profilesList.PrintExports(*flagUseProfileName)
 }

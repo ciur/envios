@@ -82,3 +82,13 @@ func (p Profile) PrintExports() {
 		fmt.Printf("export %s=%s\n", v.Name, v.Value)
 	}
 }
+
+func (arr ProfilesList) List() {
+	for i, p := range arr {
+		if p.InheritFrom != "" {
+			fmt.Printf("%d. %s inherits from %s\n", i+1, p.Name, p.InheritFrom)
+		} else {
+			fmt.Printf("%d. %s\n", i+1, p.Name)
+		}
+	}
+}
