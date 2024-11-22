@@ -60,19 +60,21 @@ Finally, you can print all profiles in specific configuration with `-l` flag:
 
 ## Configuration File Syntax
 
-[SomeParent]
-commonVar1 = a
-commonVar2 = b
-commonVar3 = c
+```
+    [SomeParent]
+    commonVar1 = a
+    commonVar2 = b
+    commonVar3 = c
 
-[profileName1:SomeParent:defaultSwitch]
-X1 = val1
-X2 = val2
+    [profileName1:SomeParent:defaultSwitch]
+    X1 = val1
+    X2 = val2
 
-[profileName2]
-X1 = anothervalue1
-X2 = anothervalue2
-Y1 = coco
+    [profileName2]
+    X1 = anothervalue1
+    X2 = anothervalue2
+    Y1 = coco
+```
 
 "defaultSwitch" part is not used. Initial idea was to have of one the profiles defined as 'default'; but
 in the end there is no practical use for it - thus it has no effect. Just don't use it.
