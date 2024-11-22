@@ -60,6 +60,23 @@ func (arr ProfilesList) FindProfile(name string) *Profile {
 	return nil
 }
 
+func (arr ProfilesList) PrintExports(name string) {
+	found := arr.FindProfile(name)
+
+	if found != nil {
+		found.PrintExports()
+		if found.InheritFrom != "" {
+			inheritFrom := arr.FindProfile(found.InheritFrom)
+			if inheritFrom != nil {
+				inheritFrom.PrintExports()
+			}
+		}
+	} else {
+		fmt.Printf("Profile '%s' not found\n", name)
+	}
+
+}
+
 func (p Profile) PrintExports() {
 	for _, v := range p.Variables {
 		fmt.Printf("export %s=%s\n", v.Name, v.Value)

@@ -20,15 +20,10 @@ func main() {
 	allProfiles, error := parser.LoadConfig(*flagConfig)
 
 	if error != "" {
-		fmt.Printf("Parsing error: %v\n", error)
+		fmt.Printf("Error: %v\n", error)
 		os.Exit(1)
 	}
 	profilesList := profiles.ProfilesList(allProfiles)
-	found := profilesList.FindProfile(*flagUseProfileName)
-	if found != nil {
-		found.PrintExports()
-	} else {
-		fmt.Printf("Profile %s not found\n", *flagUseProfileName)
-		os.Exit(1)
-	}
+
+	profilesList.PrintExports(*flagUseProfileName)
 }
